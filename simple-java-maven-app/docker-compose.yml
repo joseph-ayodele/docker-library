@@ -1,0 +1,10 @@
+# deploy with: docker-compose -f docker-compose.yml
+
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  app:
+    image: simple-java-maven-app
+    build: .
