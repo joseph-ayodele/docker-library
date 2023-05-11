@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  oracledb:
+    container_name: oracledb19
+    build: .
+    ports:
+      - "1521:1521"
+    volumes:
+      - oradata:/u01/app/oracle/oradata
+
+volumes:
+  oradata:
