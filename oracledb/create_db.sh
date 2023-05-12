@@ -46,13 +46,14 @@ EOL
 
 # Checks if the database was created successfully
 function check_db_created() {
-  DB=$(sqlplus -s / as sysdba <<EOF
+  DB=$(
+    sqlplus -s / as sysdba <<EOF
 set heading off;
 set pagesize 0;
 SELECT name FROM v\$database WHERE name = '${ORACLE_SID}';
 exit;
 EOF
-)
+  )
   ret=$?
   if [ $ret -eq 0 ] && [ "${DB}" = "${ORACLE_SID}" ]; then
     echo 0
@@ -61,7 +62,7 @@ EOF
   fi
 }
 
-# Create and setup database 
+# Create and setup database
 function create_database() {
   lsnrctl start
 
@@ -87,12 +88,12 @@ ALTER SYSTEM SET local_listener='';
 EXEC DBMS_XDB_CONFIG.SETGLOBALPORTENABLED (TRUE);
 exit;
 EOF
-  
+
   db_created=$(check_db_created)
   if [ "${db_created}" -eq 0 ]; then
-    date -Iseconds > "${DATA_DIR}/.${ORACLE_SID}.created"
+    date -Iseconds >"${DATA_DIR}/.${ORACLE_SID}.created"
     echo "Database Created Successfully!"
-  else 
+  else
     echo "Error! Something went wrong trying to create database!"
     exit 1
   fi
@@ -101,9 +102,9 @@ EOF
 # Runs all .sql scripts in USER_SCRIPTS directory
 function run_user_scripts() {
   for script in "${USER_SCRIPTS}"/*.sql; do
-      echo "$0: executing ${script}";
-      echo "exit" | sqlplus -s / as sysdba @"${script}";
-      echo "";
+    echo "$0: executing ${script}"
+    echo "exit" | sqlplus -s / as sysdba @"${script}"
+    echo ""
   done
 }
 
