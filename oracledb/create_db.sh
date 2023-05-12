@@ -1,23 +1,6 @@
 #!/bin/bash
 # This script starts the oracle database or creates a database if one doesn't exist
 
-# Check if database exists
-function check_db_exists() {
-  DB=$(sqlplus -s / as sysdba <<EOF
-set heading off;
-set pagesize 0;
-SELECT name FROM v\$database WHERE name = ${ORACLE_SID};
-exit;
-EOF
-)
-  ret=$?
-  if [ $ret -eq 0 ] && [ "${DB}" = "${ORACLE_SID}" ]; then
-    echo 0
-  else
-    echo 1
-  fi
-}
-
 # Start database
 function start_database() {
   lsnrctl start
@@ -29,7 +12,7 @@ EOF
 
 # Create network directory
 NETWORK_DIR="${ORACLE_HOME}/network/admin"
-mkdir -p ${NETWORK_DIR}
+mkdir -p "${NETWORK_DIR}"
 
 # Configure the database network
 function setup_network_config() {
@@ -61,6 +44,23 @@ ${ORACLE_SID}=localhost:1521/${ORACLE_SID}
 EOL
 }
 
+# Checks if the database was created successfully
+function check_db_created() {
+  DB=$(sqlplus -s / as sysdba <<EOF
+set heading off;
+set pagesize 0;
+SELECT name FROM v\$database WHERE name = '${ORACLE_SID}';
+exit;
+EOF
+)
+  ret=$?
+  if [ $ret -eq 0 ] && [ "${DB}" = "${ORACLE_SID}" ]; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
 # Create and setup database 
 function create_database() {
   lsnrctl start
@@ -87,6 +87,15 @@ ALTER SYSTEM SET local_listener='';
 EXEC DBMS_XDB_CONFIG.SETGLOBALPORTENABLED (TRUE);
 exit;
 EOF
+  
+  db_created=$(check_db_created)
+  if [ "${db_created}" -eq 0 ]; then
+    date -Iseconds > "${DATA_DIR}/.${ORACLE_SID}.created"
+    echo "Database Created Successfully!"
+  else 
+    echo "Error! Something went wrong trying to create database!"
+    exit 1
+  fi
 }
 
 # Runs all .sql scripts in USER_SCRIPTS directory
@@ -99,10 +108,8 @@ function run_user_scripts() {
 }
 
 # Main
-db_exists=$(check_db_exists)
-
-# Start db if it exists or create one
-if [ "${db_exists}" -eq 0 ]; then
+# Start db if it exists or create one if it doesn't
+if [ -d "${DATA_DIR}/${ORACLE_SID}" ] && [ -f "${DATA_DIR}/.${ORACLE_SID}.created" ]; then
   echo "Starting database..."
   start_database
 else
@@ -114,6 +121,6 @@ else
 fi
 
 # Setup logging and prevent container from exiting
-tail -f ${ORACLE_BASE}/diag/rdbms/*/*/trace/alert*.log &
+tail -f "${ORACLE_BASE}"/diag/rdbms/*/*/trace/alert*.log &
 childPID=$!
 wait $childPID
