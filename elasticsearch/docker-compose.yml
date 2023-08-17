@@ -4,6 +4,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     container_name: elasticsearch
     environment:
+      - node.name=es_node_01
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ELASTIC_PASSWORD=${PASSWORD}
