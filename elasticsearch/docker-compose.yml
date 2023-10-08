@@ -23,6 +23,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
   kibana:
     depends_on:
@@ -50,6 +52,12 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    volumes:
+      - kibanadata:/usr/share/elasticsearch/data
 
 networks:
   es-net:
+
+volumes:
+  esdata: {}
+  kibanadata: {}
