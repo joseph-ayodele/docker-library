@@ -2,12 +2,19 @@ version: "3.8"
 
 services:
   oracledb:
-    container_name: oracledb19
-    build: .
+    container_name: mde-oracledb
+    image: container-registry.oracle.com/database/free:latest
     ports:
-      - "1521:1521"
+      - "1522:1521"
+    environment:
+      - ORACLE_PWD=renaissance
     volumes:
-      - oradata:/u01/app/oracle/oradata
-
+      - ./scripts:/opt/oracle/scripts/startup
+      - oracle-data:/opt/oracle/oradata
+      - oracle-dbs:/opt/oracle/product/23c/dbhomeFree/dbs
+  
 volumes:
-  oradata:
+  oracle-data:
+    name: mde-oradata
+  oracle-dbs:
+    name: mde-oracle-dbs
