@@ -58,7 +58,7 @@ if [ ! -f "$FLAG_FILE" ]; then
 	echo "Initial setup: Configuring ORCL PDB and creating users..."
 
 	create_orcl_service
-	run_sql_file "/opt/oracle/scripts/startup/ren_users.sql-setup"
+#	run_sql_file "/opt/oracle/scripts/startup/ren_users.sql-setup"
 
 	# Create the flag file to indicate the script has run
 	touch "$FLAG_FILE"
