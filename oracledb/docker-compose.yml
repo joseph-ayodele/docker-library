@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  oracledb:
+  oracle:
     container_name: oracledb-23
     build: .
     restart: unless-stopped
@@ -10,11 +10,11 @@ services:
     environment:
       - ORACLE_PWD=renaissance
     volumes:
-      - oracle-data:/opt/oracle/oradata
-      - oracle-dbs:/opt/oracle/product/23c/dbhomeFree/dbs
+      - data:/opt/oracle/oradata
+      - dbs:/opt/oracle/product/23c/dbhomeFree/dbs
   
 volumes:
-  oracle-data:
+  data:
     name: oradata
-  oracle-dbs:
+  dbs:
     name: oracle-dbs

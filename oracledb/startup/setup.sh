@@ -22,6 +22,9 @@ function create_orcl_service {
 		echo "Error creating ORCL service. Please check the Oracle logs."
 		exit 1
 	fi
+	sqlplus / as sysdba <<-EOF
+		ALTER SYSTEM SET processes=2500 SCOPE=spfile;
+	EOF
 	lsnrctl reload
 }
 
@@ -58,7 +61,7 @@ if [ ! -f "$FLAG_FILE" ]; then
 	echo "Initial setup: Configuring ORCL PDB and creating users..."
 
 	create_orcl_service
-#	run_sql_file "/opt/oracle/scripts/startup/ren_users.sql-setup"
+	run_sql_file "/opt/oracle/scripts/startup/setup.sql-setup"
 
 	# Create the flag file to indicate the script has run
 	touch "$FLAG_FILE"

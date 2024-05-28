@@ -6,4 +6,4 @@ WORKDIR /opt/oracle/scripts/startup
 
 # Copy the setup script into the container
 COPY --chmod=755 ./startup/setup.sh ./setup.sh
-# COPY ./startup/users.sql-setup ./ren_users.sql-setup/
+COPY ./startup/setup.sql-setup ./setup.sql-setup
