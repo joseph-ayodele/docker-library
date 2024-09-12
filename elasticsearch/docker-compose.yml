@@ -8,7 +8,6 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ELASTIC_PASSWORD=${PASSWORD}
-    mem_limit: ${ES_MEM_LIMIT}
     ports:
       - ${ES_PORT}:9200
     networks:
